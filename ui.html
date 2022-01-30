@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Camera Stop</title>
+		<meta charset="utf-8">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+		<meta name="application-name" content="Camera Stop">
+		<meta name="theme-color" content="#000000">
+		
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" />
+		<style>
+			body 
+			{
+				background: rgba(40, 40, 40, 1.0); 
+                box-sizing: border-box;
+				color: rgba(255, 255, 255, 1.0);
+				font-family: 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+                font-size: 12px;
+				margin: 0; 
+			    max-width: 100vw;
+                overflow-x: hidden;
+                padding: 0;
+            }
+
+			.status 
+			{
+				background: rgba(0, 0, 0, 0.5);
+				border-radius: 4px;
+				box-sizing: border-box;
+				font-size: 12px;
+				height: 24px;
+				line-height: 12px;
+				margin: -24px auto 0 auto;
+				max-width: 960px;
+				padding: 8px;
+				text-align: center;
+				width: 100%;
+				z-index: 1000;
+			}
+
+            header
+            {
+                background-color: rgba(45, 45, 45, 1.0);
+                border-bottom: 1px solid rgba(0, 0, 0, 1.0);
+                padding-top: 5px;
+            }
+
+            nav
+            {
+                display: flex;
+                padding: 5px;
+            }
+
+            .controls
+			{
+				align-items: center;
+                display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+			}
+
+            .controls h2
+            {
+                order: 2;
+                padding: 5px;
+                margin: 0;
+                font-size: .75rem;
+                font-weight: 500;
+                border-top: 1px solid rgba(255, 255, 255, 0.5);
+                display: inline-block;
+                width: 90%;
+                text-align: center;
+            }
+
+            .controls-section
+			{
+				align-items: center;
+				display: flex;
+				flex-basis: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+			}
+
+            .control-divider 
+            {
+                border: 1px solid rgba(85, 85, 85, 1.0);
+            }
+
+			.control-group
+			{
+				margin: 0 8px;
+			}
+
+			.control-group label,
+			.controls > label 
+			{
+				align-items: center;
+				background: rgba(82, 82, 82, 1.0);
+				border-radius: 4px;
+				font-size: .80rem;
+				display: block;
+				justify-content: center;
+				line-height: 12px;
+				overflow: hidden;
+				padding: 6px;
+				text-align: center;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				width: 132px;
+			}
+
+			.control-group > div
+			{
+				text-align: center;
+			}
+
+			.controls > label
+			{
+				width: 100%;
+			}
+
+			.control-button
+			{
+				background: rgba(0, 0, 0, 0);
+				border: 0;
+				color: rgba(255, 255, 255, 1.0);
+				display: inline-block;
+				font-size: 36px;
+				height: 42px;
+				margin: 12px;
+                opacity: 0.8;
+				padding: 0;
+				text-align: center;
+				text-decoration: none;
+				width: 42px;
+			}
+
+            .control-button.logo 
+            {
+                width: 84px;
+                height: 84px;
+            }
+
+			.control-button:focus
+			{
+				outline: none !important; 
+			}
+
+			.control-button:hover,
+			.control-button:focus
+			{
+				opacity: 1.0;
+			}
+
+			.control-button.white
+			{
+				color: rgba(255, 255, 255, 1.0);
+			}
+
+			.control-button.white.dim
+			{
+				color: rgba(255, 255, 255, 0.4);
+			}
+
+			.control-button.red
+			{
+				color: rgba(255, 0, 0, 1.0);
+			}
+
+			.control-button.red.dim
+			{
+				color: rgba(255, 0, 0, 0.4);
+			}
+
+			.control-button.green
+			{
+				color: rgba(0, 255, 0, 1.0);
+			}
+
+			.control-button.green.dim
+			{
+				color: rgba(0, 255, 0, 0.4);
+			}
+
+			.control-button.blue
+			{
+				color: rgba(0, 0, 255, 1.0);
+			}
+
+			.control-button.blue.dim
+			{
+				color: rgba(0, 0, 255, 0.5);
+			}
+
+            .control-button.raspberry
+            {
+                color: rgba(227, 11, 92, 1.0);
+            }
+
+            .preview 
+			{
+				align-items: center; 
+                border-radius: 4px;
+				box-sizing: border-box;
+				box-shadow: 0px 3px 20px rgba(0, 0, 0, 1.0);
+                display: flex; 
+				flex-wrap: wrap;
+                height: calc(100vw * .5625);
+				justify-content: center;
+				margin: 20px auto 0 auto;
+                max-height: 720px;
+                max-width: 1280px;
+            	overflow: hidden;
+				padding-bottom: 60px;
+                position: relative; 
+				width: 100vw; 
+			}
+
+			.preview > img 
+			{
+				display: flex;
+				flex-wrap: wrap;
+                height: 100%;
+				left: 0;
+                justify-content: center;
+                position: absolute;
+                top: 0;
+                width: 100%;
+			}
+
+            .preview img
+            {
+                top: 0;
+            }
+
+            .preview img.overlay
+            {
+                opacity: 0.3;
+            }
+
+            .frames
+            {
+                background-color: rgba(38, 38, 38, 1.0);
+                box-shadow: inset -20px 0 5px 0 rgba(0, 0, 0, 1.0);
+                height: 216px;
+                margin: 10px auto 0 auto;
+                min-width: 1000vw;
+                overflow-x: hidden;
+                overflow-y: hidden;
+            }
+
+            .frame
+            {
+                height: 216px;
+                width: 384px;
+            }
+
+            .frame.selected
+            {
+                border: 1px solid rgba(0, 122, 204, 1.0);
+            }
+
+            .controls-production
+            {
+                margin: 10px auto 30px auto;
+            }
+		</style>
+	</head>
+	<body>
+		<header>
+            <nav aria-label="Settings Menu">
+                
+                <h1 style="display: none;"></h1>
+                <button data-url="/control/home" class="control-button raspberry logo" title=""><i class="fas fa-stopwatch fa-lg"></i></button>
+
+                <div class="control-divider"></div>
+
+                <section class="controls controls-camera">
+                    <h2>Camera</h2>
+                    <div class="controls-section">
+                        <div class="control-group">
+                            <label>Shutter Speed</label>
+                            <div>
+                                <button data-url="/control/shutter/up" class="control-button" title="Increase shutter speed (shorter)"><i class="fas fa-plus-circle"></i></button>
+                                <button data-url="/control/shutter/down" class="control-button" title="Decrease shutter speed (longer)"><i class="fas fa-minus-circle"></i></button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>ISO</label>
+                            <div>
+                                <button data-url="/control/iso/up" class="control-button" title="Increase ISO"><i class="fas fa-plus-circle"></i></button>
+                                <button data-url="/control/iso/down" class="control-button" title="Decrease ISO"><i class="fas fa-minus-circle"></i></button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>Exposure Compensation</label>
+                            <div>
+                                <button data-url="/control/ev/up" class="control-button" title="Increase exposure compensation"><i class="fas fa-plus-circle"></i></button>
+                                <button data-url="/control/ev/down" class="control-button" title="Decrease exposure compensation"><i class="fas fa-minus-circle"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="control-divider"></div>
+                
+                <section class="controls controls-lighting">
+                    <h2>Lighting</h2>
+                    <div class="controls-section">
+                        <div class="control-group">
+                            <div>
+                                <label>Master Control</label>
+                                <button data-url="/control/light/all/on" class="control-button white" title="Turn all lights on"><i class="fas fa-sun"></i></button>
+                                <button data-url="/control/light/all/off" class="control-button white dim" title="Turn all lights off"><i class="far fa-sun"></i></button>	
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div>
+                                <label>Natural White</label>
+                                <button data-url="/control/light/white/up" class="control-button white" title="Increase natural white light level"><i class="fas fa-lightbulb"></i></button>
+                                <button data-url="/control/light/white/down" class="control-button white dim" title="Decrease natural white light level"><i class="far fa-lightbulb"></i></button>	
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>Red</label>
+                            <div>
+                                <button data-url="/control/light/red/up" class="control-button red" title="Increase red light level"><i class="fas fa-lightbulb"></i></button>
+                                <button data-url="/control/light/red/down" class="control-button red dim" title="Decrease red light level"><i class="far fa-lightbulb"></i></button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>Green</label>
+                            <div>
+                                <button data-url="/control/light/green/up" class="control-button green" title="Increase green light level"><i class="fas fa-lightbulb"></i></button>
+                                <button data-url="/control/light/green/down" class="control-button green dim" title="Decrease green light level"><i class="far fa-lightbulb"></i></button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label>Blue</label>
+                            <div>
+                                <button data-url="/control/light/blue/up" class="control-button blue" title="Increase blue light level"><i class="fas fa-lightbulb"></i></button>
+                                <button data-url="/control/light/blue/down" class="control-button blue dim" title="Decrease blue light level"><i class="far fa-lightbulb"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="control-divider"></div>
+
+            </nav>
+        </header>
+
+        <main>
+            <section class="preview">
+                <img src="stream.mjpg" class="stream" />
+                <img src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E" class="overlay" />
+            </section>
+            <div class="status"></div>
+            
+            <section class="frames">
+                
+            </section>
+
+            <nav aria-label="Production Menu">
+                <section class="controls controls-production">
+                    <div class="control-group">
+                        <label>Capture Frame</label>
+                        <div>
+                            <button data-url="/control/capture/photo" class="control-button" title="Capture photo"><i class="fas fa-camera"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Toggle Overlay Mask</label>
+                        <div>
+                            <button data-url="/control/mask/toggle" class="control-button overlay-mask-toggle" title="Toggle overlay mask"><i class="fas fa-theater-masks dim"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Export</label>
+                        <div>
+                            <button data-url="/control/export/zip" class="control-button" title="Export ZIP archive"><i class="fas fa-file-export"></i></button>
+                            <button data-url="/control/export/video" class="control-button" title="Export video"><i class="fas fa-photo-video"></i></button>
+                        </div>
+                    </div>
+                </section>
+            </nav>
+        </main>
+
+
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" integrity="sha512-Tn2m0TIpgVyTzzvmxLNuqbSJH3JP8jm+Cy3hvHrW7ndTDcJ1w5mBiksqDBb8GpE2ksktFvDB/ykZ0mDpsZj20w==" crossorigin="anonymous"></script>
+        <script>
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            var lastStatus = '';
+                
+            async function updateStatus() {
+                var url = '/status';
+                
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'text';
+                xhr.onload = function() {
+                    if (xhr.readyState === xhr.DONE) {
+                        if (xhr.status === 200) {
+                            status = xhr.responseText;
+                            if (status !== lastStatus && status !== 'Ready') {
+                                lastStatus = status;
+                                document.getElementsByClassName('status')[0].innerHTML = status;
+                            }
+                        }
+                    }
+                };
+                //xhr.send(null);
+            }
+
+            async function monitorStatus() {
+                try {
+                    while (true) {
+                        await updateStatus();
+                        await sleep(1000);
+                    }
+                }
+                catch(ex) {
+                    console.warn('Could not update status', ex);
+                }
+            }
+            monitorStatus();
+            
+            async function cycleImage() {
+                try {
+                    // This makes the browser aware that the stream has resumed
+                    document.getElementsByClassName('stream')[0].style.height = Math.round(document.getElementsByClassName('stream')[0].scrollWidth * 0.5625) + 'px';
+                    await sleep(1000);
+                    document.getElementsByClassName('stream')[0].src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E';
+                    await sleep(500);
+                    document.getElementsByClassName('stream')[0].src='stream.mjpg';
+                    document.getElementsByClassName('stream')[0].removeAttribute("style") // Return to responsive behavior
+                }
+                catch(ex) {
+                    console.warn('Could not cycle image', ex);
+                }
+            }
+
+            var controls = document.querySelectorAll('.control-button:not(.overlay-mask-toggle)');
+            controls.forEach(element => element.addEventListener('click', event => {
+                var targetElement = event.target.closest('.control-button');
+                var url = targetElement.getAttribute('data-url');
+                //console.log(url, targetElement, targetElement.classList)
+                
+                var confirmedButtonAction = false;
+                if (url.endsWith('/control/exit')) {
+                    confirmedButtonAction = confirm("Exit the camera program?");
+                }
+                else if (url.endsWith('/control/trackball')) {
+                    confirmedButtonAction = confirm("Switch to trackball control?");
+                }
+                else {
+                    confirmedButtonAction = true;
+                }
+                
+                if (confirmedButtonAction == true) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', url);
+                    xhr.send();
+                    cycleImage();
+                }
+            }));
+
+            function toggle(selector) {
+                itemsToToggle = document.querySelectorAll(selector);
+                itemsToToggle.forEach(element => {
+                    //console.log(element);
+                    element.style.display = element.style.display == "none" ? "block" : "none";
+                });
+            }
+            
+            var overlayMaskButton = document.querySelector('.overlay-mask-toggle');
+            overlayMaskButton.addEventListener('click', event => {
+                toggle('.overlay');
+                event.preventDefault();
+            })
+
+            var labels = document.querySelectorAll('label');
+            labels.forEach(element => {
+                element.title = element.textContent;
+            });
+        </script>
+	</body>
+</html>
