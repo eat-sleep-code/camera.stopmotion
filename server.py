@@ -35,20 +35,12 @@ PAGE="""\
                 padding: 0;
             }
 
-			.status 
+			@media only screen and (max-width: 1920px)
 			{
-				background: rgba(0, 0, 0, 0.5);
-				border-radius: 4px;
-				box-sizing: border-box;
-				font-size: 12px;
-				height: 24px;
-				line-height: 12px;
-				margin: -24px auto 0 auto;
-				max-width: 960px;
-				padding: 8px;
-				text-align: center;
-				width: 100%;
-				z-index: 1000;
+				body 
+				{
+					zoom: 75%;
+				}
 			}
 
             header
@@ -251,6 +243,22 @@ PAGE="""\
                 opacity: 0.3;
             }
 
+			.status 
+			{
+				background: rgba(0, 0, 0, 0.5);
+				border-radius: 4px;
+				box-sizing: border-box;
+				font-size: 12px;
+				height: 24px;
+				line-height: 12px;
+				margin: -24px auto 0 auto;
+				max-width: 960px;
+				padding: 8px;
+				text-align: center;
+				width: 100%;
+				z-index: 1000;
+			}
+
             .frames
             {
                 background-color: rgba(38, 38, 38, 1.0);
@@ -367,8 +375,8 @@ PAGE="""\
             <section class="preview">
                 <img src="stream.mjpg" class="stream" />
                 <img src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E" class="overlay" />
+				<div class="status"></div>
             </section>
-            <div class="status"></div>
             
             <section class="frames">
                 
