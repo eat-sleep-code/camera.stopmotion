@@ -438,7 +438,7 @@ PAGE="""\
                         }
                     }
                 };
-                //xhr.send(null);
+                xhr.send(null);
             }
 
             async function monitorStatus() {
