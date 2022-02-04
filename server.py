@@ -239,13 +239,14 @@ PAGE="""\
 			{
 				background: rgba(0, 0, 0, 0.5);
 				border-radius: 4px;
+				bottom: 10px;
 				box-sizing: border-box;
 				font-size: 12px;
 				height: 24px;
 				line-height: 12px;
-				margin: -24px auto 0 auto;
 				max-width: 960px;
 				padding: 8px;
+				position: absolute
 				text-align: center;
 				width: 100%;
 				z-index: 1000;
@@ -453,6 +454,39 @@ PAGE="""\
                 }
             }
             monitorStatus();
+
+
+			async function updatePriorImage() {
+                var url = '/image/prior';
+                
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'text';
+                xhr.onload = function() {
+                    if (xhr.readyState === xhr.DONE) {
+                        if (xhr.status === 200) {
+                            priorImage = xhr.responseText;
+                            if (priorImage !== '') {
+                                document.getElementsByClassName('overlay')[0].src = priorImage;
+                            }
+                        }
+                    }
+                };
+                xhr.send(null);
+            }
+
+            async function monitorPriorImage() {
+                try {
+                    while (true) {
+                        await updatePriorImage();
+                        await sleep(1000);
+                    }
+                }
+                catch(ex) {
+                    console.warn('Could not update prior image', ex);
+                }
+            }
+            monitorPriorImage();
             
             async function cycleImage() {
                 try {
@@ -568,7 +602,6 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 				pass
 		elif self.path == '/status':
 			content = statusDictionary['message']
-			print(content)
 			if len(content) == 0:
 				content = "Ready"
 			contentEncoded = content.encode('utf-8')
@@ -672,8 +705,17 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			if self.path == '/export/zip':	
 				print('Export ZIP')
 			elif self.path == '/export/video':	
-				print('Export Video')
-
+				print('Export Video')  
+		elif self.path == '/image/prior':
+			content = priorImage
+			if len(content) == 0:
+				content = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E'
+			contentEncoded = content.encode('utf-8')
+			self.send_response(200)
+			self.send_header('Content-Type', 'text/html')
+			self.send_header('Content-Length', len(contentEncoded))
+			self.end_headers()
+			self.wfile.write(contentEncoded)
 		elif self.path == '/favicon.ico':
 			self.send_response(200)
 			self.send_header('Content-Type', 'image/x-icon')

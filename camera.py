@@ -21,7 +21,7 @@ camera.sensor_mode = 3
 camera.framerate = 30
 running = False
 imagePrior = ''
-imageList = {}
+imageList = []
 statusDictionary = {'message': '', 'action': '', 'colorR': 0, 'colorG': 0, 'colorB': 0, 'colorW': 0}
 buttonDictionary = {'switchMode': 0, 'shutterUp': False, 'shutterDown': False, 'isoUp': False, 'isoDown': False, 'evUp': False, 'evDown': False, 'capture': False, 'lightR': 0, 'lightB': 0, 'lightG': 0, 'lightW': 0, 'exit': False}
 
@@ -288,7 +288,7 @@ try:
 	echoOff()
 	imageCount = 1
 	imagePrior = ''
-	imageList = {}
+	imageList = []
 
 	try:
 		os.chdir('/home/pi') 
@@ -351,6 +351,9 @@ try:
 					filepath = getFilePath(True)
 					print(' Capturing image: ' + filepath + '\n')
 					captureImage(filepath, raw)
+					imagePrior = filepath
+					imageList.append(filepath)
+
 					
 					imageCount += 1
 					buttonDictionary.update({'capture': False})
