@@ -35,14 +35,6 @@ PAGE="""\
                 padding: 0;
             }
 
-			@media only screen and (max-width: 1920px)
-			{
-				body 
-				{
-					zoom: 75%;
-				}
-			}
-
             header
             {
                 background-color: rgba(45, 45, 45, 1.0);
@@ -285,6 +277,17 @@ PAGE="""\
             {
                 margin: 10px auto 30px auto;
             }
+
+			/* Zoom */
+			@media only screen and (max-width: 1920px)
+			{
+				header, main 
+				{
+					margin: auto;
+					zoom: 75%;
+				}
+			}
+
 		</style>
 	</head>
 	<body>
@@ -565,6 +568,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 				pass
 		elif self.path == '/status':
 			content = statusDictionary['message']
+			print(content)
 			if len(content) == 0:
 				content = "Ready"
 			contentEncoded = content.encode('utf-8')
@@ -663,6 +667,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			self.send_header('Content-Type', 'text/html')
 			self.send_header('Content-Length', 0)
 			self.end_headers()
+
 		elif self.path.startswith('/export/'):
 			if self.path == '/export/zip':	
 				print('Export ZIP')
