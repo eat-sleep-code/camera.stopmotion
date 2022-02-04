@@ -354,7 +354,9 @@ try:
 					imagePrior = filepath
 					imageList.append(filepath)
 
-					
+					print('buttonClick', imagePrior)
+
+
 					imageCount += 1
 					buttonDictionary.update({'capture': False})
 

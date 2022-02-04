@@ -8,6 +8,7 @@ from threading import Condition
 from http import server
 
 global buttonDictionary
+global imagePrior
 
 PAGE="""\
 <!DOCTYPE html>
@@ -486,7 +487,7 @@ PAGE="""\
                     console.warn('Could not update prior image', ex);
                 }
             }
-            monitorPriorImage();
+            //monitorPriorImage();
             
             async function cycleImage() {
                 try {
