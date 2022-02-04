@@ -268,9 +268,11 @@ def createControls():
 	global running
 	global statusDictionary	
 	global buttonDictionary
+	global imagePrior
+	global imageList
 	
 	running = True
-	server.startStream(camera, running, statusDictionary, buttonDictionary)
+	server.startStream(camera, running, statusDictionary, buttonDictionary, imagePrior, imageList)
 	
 # -------------------------------------------------------------------------------
 def darkMode():
@@ -354,8 +356,7 @@ try:
 					imagePrior = filepath
 					imageList.append(filepath)
 
-					print('buttonClick', imagePrior)
-
+				
 
 					imageCount += 1
 					buttonDictionary.update({'capture': False})
