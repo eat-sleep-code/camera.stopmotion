@@ -246,7 +246,7 @@ PAGE="""\
 				line-height: 12px;
 				max-width: 960px;
 				padding: 8px;
-				position: absolute
+				position: absolute;
 				text-align: center;
 				width: 100%;
 				z-index: 1000;
@@ -573,6 +573,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 		global output
 		global statusDictionary
 		global buttonDictionary
+		global imagePrior
 		if self.path == '/':
 			contentEncoded = PAGE.encode('utf-8')
 			self.send_response(200)
@@ -707,7 +708,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			elif self.path == '/export/video':	
 				print('Export Video')  
 		elif self.path == '/image/prior':
-			content = priorImage
+			content = imagePrior
 			if len(content) == 0:
 				content = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E'
 			contentEncoded = content.encode('utf-8')
