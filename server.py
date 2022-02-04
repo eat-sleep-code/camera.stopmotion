@@ -732,12 +732,17 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 	daemon_threads = True
 
 
-def startStream(camera, running, parentStatusDictionary, parentButtonDictionary):
+def startStream(camera, running, parentStatusDictionary, parentButtonDictionary, parentImagePrior, parentImageList):
 	global output
 	global statusDictionary 
 	global buttonDictionary
+	global imagePrior
+	global imageList
 	statusDictionary = parentStatusDictionary
 	buttonDictionary = parentButtonDictionary
+	imagePrior = parentImagePrior
+	imageList = parentImageList
+	
 	camera.resolution = (1920, 1080)
 	camera.framerate = 30
 
@@ -757,12 +762,17 @@ def startStream(camera, running, parentStatusDictionary, parentButtonDictionary)
 		print('\n Stream ended \n')
 
 
-def resumeStream(camera, running, parentStatusDictionary, parentButtonDictionary):
+def resumeStream(camera, running, parentStatusDictionary, parentButtonDictionary, parentImagePrior, parentImageList):
 	global output
 	global statusDictionary 
 	global buttonDictionary
+	global imagePrior
+	global imageList
 	statusDictionary = parentStatusDictionary
 	buttonDictionary = parentButtonDictionary
+	imagePrior = parentImagePrior
+	imageList = parentImageList
+	
 	camera.resolution = (1920, 1080)
 	camera.framerate = 30
 	output = StreamingOutput()
