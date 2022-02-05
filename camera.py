@@ -4,7 +4,6 @@ from light import Light
 import server
 import datetime
 import fractions
-import glob
 import os
 import signal
 import subprocess
@@ -246,20 +245,6 @@ def getFilePath(timestamped = True, isVideo = False):
 		quit()
 	else:
 		return outputFolder + getFileName(timestamped, isVideo)
-
-# ------------------------------------------------------------------------------
-
-def getFilesInFolder(path = 'dcim/'):
-	try:
-		fileList = glob.glob(path + '*')
-		fileLatest = max(fileList, key=os.path.getctime)
-	except OSError:
-		print (' ERROR: Getting list of files in ' + path + ' failed! ')
-		echoOn()
-		quit()
-	else:
-		return fileList, fileLatest
-
 
 # ------------------------------------------------------------------------------
 
