@@ -713,19 +713,25 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			elif self.path == '/export/video':	
 				print('Export Video')  
 		elif self.path == '/image/prior':
-			fileList = glob.glob('dcim/' + '*')
+			fileList = glob.glob('dcim/' + '*.jpg')
 			fileLatest = max(fileList, key=os.path.getctime)
 			if len(fileList) == 0:
 				content = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E'
 			else:
-				content = fileLatest
-			print(fileLatest)
+				content = '/image/' + fileLatest
 			contentEncoded = content.encode('utf-8')
 			self.send_response(200)
 			self.send_header('Content-Type', 'text/html')
 			self.send_header('Content-Length', len(contentEncoded))
 			self.end_headers()
 			self.wfile.write(contentEncoded)
+		elif self.path.startswith('/image/'):
+			imageFile = open('/home/pi' + self.path.replace('/image/', '/'))
+			self.send_response(200)
+			self.send_header('Content-Type', 'image/jpeg')
+			self.end_headers()
+			self.wfile.write(imageFile.read())
+			imageFile.close()
 		elif self.path == '/favicon.ico':
 			self.send_response(200)
 			self.send_header('Content-Type', 'image/x-icon')
