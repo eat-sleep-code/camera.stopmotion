@@ -728,7 +728,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 		elif self.path.startswith('/image/'):
 			imagePath = '/home/pi' + self.path.replace('/image/', '/')
 			print(imagePath)
-			imageFile = open(imagePath)
+			imageFile = open(imagePath, 'wb')
 			imageData = imageFile.read()
 			self.send_response(200)
 			self.send_header('Content-Type', 'image/jpeg')
