@@ -8,6 +8,7 @@ from threading import Condition
 from http import server
 
 global buttonDictionary
+global imagePrior
 
 PAGE="""\
 <!DOCTYPE html>
