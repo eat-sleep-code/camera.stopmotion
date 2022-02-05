@@ -8,7 +8,6 @@ from threading import Condition
 from http import server
 
 global buttonDictionary
-global imagePrior
 
 PAGE="""\
 <!DOCTYPE html>
@@ -421,6 +420,7 @@ PAGE="""\
             function sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
+
             var lastStatus = '';
                 
             async function updateStatus() {
@@ -457,6 +457,7 @@ PAGE="""\
             monitorStatus();
 
 
+			var lastPriorImage = '';
 			async function updatePriorImage() {
                 var url = '/image/prior';
                 
@@ -466,8 +467,9 @@ PAGE="""\
                 xhr.onload = function() {
                     if (xhr.readyState === xhr.DONE) {
                         if (xhr.status === 200) {
-                            priorImage = xhr.responseText;
-                            if (priorImage !== '') {
+							priorImage = xhr.responseText;
+                            if (priorImage !== lastPriorImage && priorImage !== '') {
+								lastPriorImage = priorImage;
                                 document.getElementsByClassName('overlay')[0].src = priorImage;
                             }
                         }
@@ -487,7 +489,7 @@ PAGE="""\
                     console.warn('Could not update prior image', ex);
                 }
             }
-            //monitorPriorImage();
+            monitorPriorImage();
             
             async function cycleImage() {
                 try {
@@ -574,9 +576,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 		global output
 		global statusDictionary
 		global buttonDictionary
-		global imagePrior
-		print('do_GET', imagePrior)
-
+		
 		if self.path == '/':
 			contentEncoded = PAGE.encode('utf-8')
 			self.send_response(200)
@@ -711,9 +711,12 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			elif self.path == '/export/video':	
 				print('Export Video')  
 		elif self.path == '/image/prior':
-			content = imagePrior
-			if len(content) == 0:
+			fileList, fileLatest = getFilesInFolder('dcim/') 
+			if len(fileList) == 0:
 				content = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E'
+			else:
+				content = fileLatest
+			print(fileLatest)
 			contentEncoded = content.encode('utf-8')
 			self.send_response(200)
 			self.send_header('Content-Type', 'text/html')
@@ -735,16 +738,13 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 	daemon_threads = True
 
 
-def startStream(camera, running, parentStatusDictionary, parentButtonDictionary, parentImagePrior, parentImageList):
+def startStream(camera, running, parentStatusDictionary, parentButtonDictionary):
 	global output
 	global statusDictionary 
 	global buttonDictionary
-	global imagePrior
-	global imageList
 	statusDictionary = parentStatusDictionary
 	buttonDictionary = parentButtonDictionary
-	imagePrior = parentImagePrior
-	imageList = parentImageList
+	
 	
 	print('startStream', imagePrior)
 
@@ -767,16 +767,12 @@ def startStream(camera, running, parentStatusDictionary, parentButtonDictionary,
 		print('\n Stream ended \n')
 
 
-def resumeStream(camera, running, parentStatusDictionary, parentButtonDictionary, parentImagePrior, parentImageList):
+def resumeStream(camera, running, parentStatusDictionary, parentButtonDictionary):
 	global output
 	global statusDictionary 
 	global buttonDictionary
-	global imagePrior
-	global imageList
 	statusDictionary = parentStatusDictionary
 	buttonDictionary = parentButtonDictionary
-	imagePrior = parentImagePrior
-	imageList = parentImageList
 
 	camera.resolution = (1920, 1080)
 	camera.framerate = 30

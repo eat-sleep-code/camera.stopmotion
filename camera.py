@@ -4,6 +4,7 @@ from light import Light
 import server
 import datetime
 import fractions
+import glob
 import os
 import signal
 import subprocess
@@ -20,8 +21,6 @@ camera.resolution = camera.MAX_RESOLUTION
 camera.sensor_mode = 3
 camera.framerate = 30
 running = False
-imagePrior = ''
-imageList = []
 statusDictionary = {'message': '', 'action': '', 'colorR': 0, 'colorG': 0, 'colorB': 0, 'colorW': 0}
 buttonDictionary = {'switchMode': 0, 'shutterUp': False, 'shutterDown': False, 'isoUp': False, 'isoDown': False, 'evUp': False, 'evDown': False, 'capture': False, 'lightR': 0, 'lightB': 0, 'lightG': 0, 'lightW': 0, 'exit': False}
 
@@ -250,6 +249,20 @@ def getFilePath(timestamped = True, isVideo = False):
 
 # ------------------------------------------------------------------------------
 
+def getFilesInFolder(path = 'dcim/'):
+	try:
+		fileList = glob.glob(path + '*')
+		fileLatest = max(fileList, key=os.path.getctime)
+	except OSError:
+		print (' ERROR: Getting list of files in ' + path + ' failed! ')
+		echoOn()
+		quit()
+	else:
+		return fileList, fileLatest
+
+
+# ------------------------------------------------------------------------------
+
 def captureImage(filepath, raw=False):
 	camera.capture(filepath, quality=100, bayer=raw)
 	if raw == True:
@@ -268,12 +281,9 @@ def createControls():
 	global running
 	global statusDictionary	
 	global buttonDictionary
-	global imagePrior
-	global imageList
 	
 	running = True
-	print('createControls', imagePrior)
-	server.startStream(camera, running, statusDictionary, buttonDictionary, imagePrior, imageList)
+	server.startStream(camera, running, statusDictionary, buttonDictionary)
 	
 # -------------------------------------------------------------------------------
 def darkMode():
@@ -290,8 +300,6 @@ controlsThread.start()
 try:
 	echoOff()
 	imageCount = 1
-	imagePrior = ''
-	imageList = []
 
 	try:
 		os.chdir('/home/pi') 
@@ -313,8 +321,6 @@ try:
 		global timer
 		global raw
 		global imageCount
-		global imagePrior
-		global imageList
 		global statusDictionary
 		global buttonDictionary
 		global running
@@ -354,11 +360,6 @@ try:
 					filepath = getFilePath(True)
 					print(' Capturing image: ' + filepath + '\n')
 					captureImage(filepath, raw)
-					imagePrior = filepath
-					imageList.append(filepath)
-
-				
-
 					imageCount += 1
 					buttonDictionary.update({'capture': False})
 
