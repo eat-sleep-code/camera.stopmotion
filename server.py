@@ -726,11 +726,15 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			self.end_headers()
 			self.wfile.write(contentEncoded)
 		elif self.path.startswith('/image/'):
-			imageFile = open('/home/pi' + self.path.replace('/image/', '/'))
+			imagePath = '/home/pi' + self.path.replace('/image/', '/')
+			print(imagePath)
+			imageFile = open(imagePath)
+			imageData = imageFile.read()
 			self.send_response(200)
 			self.send_header('Content-Type', 'image/jpeg')
+			self.send_header('Content-Length', len(imageData))
 			self.end_headers()
-			self.wfile.write(imageFile.read())
+			self.wfile.write(imageData)
 			imageFile.close()
 		elif self.path == '/favicon.ico':
 			self.send_response(200)
