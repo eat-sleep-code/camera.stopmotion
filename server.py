@@ -711,7 +711,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			elif self.path == '/export/video':	
 				print('Export Video')  
 		elif self.path == '/image/prior':
-			fileList, fileLatest = super().getFilesInFolder('dcim/') 
+			fileList = glob.glob('dcim/' + '*')
+			fileLatest = max(fileList, key=os.path.getctime)
 			if len(fileList) == 0:
 				content = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E'
 			else:
