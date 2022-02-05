@@ -744,9 +744,6 @@ def startStream(camera, running, parentStatusDictionary, parentButtonDictionary)
 	global buttonDictionary
 	statusDictionary = parentStatusDictionary
 	buttonDictionary = parentButtonDictionary
-	
-	
-	print('startStream', imagePrior)
 
 	camera.resolution = (1920, 1080)
 	camera.framerate = 30
