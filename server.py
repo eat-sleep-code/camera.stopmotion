@@ -574,6 +574,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 		global statusDictionary
 		global buttonDictionary
 		global imagePrior
+		print('do_GET', imagePrior)
+
 		if self.path == '/':
 			contentEncoded = PAGE.encode('utf-8')
 			self.send_response(200)
@@ -743,6 +745,8 @@ def startStream(camera, running, parentStatusDictionary, parentButtonDictionary,
 	imagePrior = parentImagePrior
 	imageList = parentImageList
 	
+	print('startStream', imagePrior)
+
 	camera.resolution = (1920, 1080)
 	camera.framerate = 30
 
@@ -772,7 +776,7 @@ def resumeStream(camera, running, parentStatusDictionary, parentButtonDictionary
 	buttonDictionary = parentButtonDictionary
 	imagePrior = parentImagePrior
 	imageList = parentImageList
-	
+
 	camera.resolution = (1920, 1080)
 	camera.framerate = 30
 	output = StreamingOutput()

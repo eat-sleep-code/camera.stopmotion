@@ -272,6 +272,7 @@ def createControls():
 	global imageList
 	
 	running = True
+	print('createControls', imagePrior)
 	server.startStream(camera, running, statusDictionary, buttonDictionary, imagePrior, imageList)
 	
 # -------------------------------------------------------------------------------
