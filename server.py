@@ -725,10 +725,22 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			self.send_header('Content-Length', len(contentEncoded))
 			self.end_headers()
 			self.wfile.write(contentEncoded)
+		elif self.path == '/image/list':
+			fileList = glob.glob('dcim/' + '*.jpg')
+			if len(fileList) == 0:
+				content = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E'
+			else:
+				content = str(fileList)
+			contentEncoded = content.encode('utf-8')
+			self.send_response(200)
+			self.send_header('Content-Type', 'text/html')
+			self.send_header('Content-Length', len(contentEncoded))
+			self.end_headers()
+			self.wfile.write(contentEncoded)
 		elif self.path.startswith('/image/'):
 			imagePath = '/home/pi' + self.path.replace('/image/', '/')
 			print(imagePath)
-			imageFile = open(imagePath, 'wb')
+			imageFile = open(imagePath, 'rb')
 			imageData = imageFile.read()
 			self.send_response(200)
 			self.send_header('Content-Type', 'image/jpeg')
