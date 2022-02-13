@@ -22,7 +22,7 @@ PAGE="""\
 		<meta name="application-name" content="Camera Stop">
 		<meta name="theme-color" content="#000000">
 		
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<style>
 			body 
 			{
@@ -258,12 +258,40 @@ PAGE="""\
             {
                 background-color: rgba(38, 38, 38, 1.0);
                 box-shadow: inset -20px 0 5px 0 rgba(0, 0, 0, 1.0);
+				display: flex;
                 height: 216px;
-                margin: 10px auto 0 auto;
+				list-style: none;
+				margin: 10px auto 0 auto;
                 min-width: 1000vw;
                 overflow-x: hidden;
                 overflow-y: hidden;
+				padding: 0;
             }
+
+			.frames li
+			{
+				position: relative;
+			}
+
+			.frames li img
+			{
+				border-radius: 4px;
+				margin: 7px 3px 6px 4px;
+				width: 360px;
+			}
+
+			.frames a {
+				color: rgba(255, 255, 255, 0.5);
+				display: inline-block;
+				font-size: 24px;
+				height: 32px;
+				position: absolute;
+				right: 10px;
+				text-align: center;
+				top: 16px;
+				width: 32px;
+				z-index: 1000;
+			}
 
             .frame
             {
@@ -275,6 +303,7 @@ PAGE="""\
             {
                 border: 1px solid rgba(0, 122, 204, 1.0);
             }
+
 
             .controls-production
             {
@@ -384,9 +413,9 @@ PAGE="""\
 				<div class="status"></div>
             </section>
             
-            <section class="frames">
+            <ul class="frames">
                 
-            </section>
+            </ul>
 
             <nav aria-label="Production Menu">
                 <section class="controls controls-production">
@@ -416,8 +445,7 @@ PAGE="""\
         </main>
 
 
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" integrity="sha512-Tn2m0TIpgVyTzzvmxLNuqbSJH3JP8jm+Cy3hvHrW7ndTDcJ1w5mBiksqDBb8GpE2ksktFvDB/ykZ0mDpsZj20w==" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" integrity="sha512-yFjZbTYRCJodnuyGlsKamNE/LlEaEAxSUDe5+u61mV8zzqJVFOH7TnULE2/PP/l5vKWpUNnF4VGVkXh3MjgLsg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
             function sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
@@ -458,7 +486,7 @@ PAGE="""\
             }
             monitorStatus();
 
-
+			/* --- Prior Image --------------------------------------------- */
 			var lastPriorImage = '';
 			async function updatePriorImage() {
                 var url = '/image/prior';
@@ -492,6 +520,58 @@ PAGE="""\
                 }
             }
             monitorPriorImage();
+
+			/* --- Image List ---------------------------------------------- */
+			var lastImageList = '';
+			async function updateImageList() {
+                var url = '/image/list';
+                
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'text';
+                xhr.onload = function() {
+                    if (xhr.readyState === xhr.DONE) {
+                        if (xhr.status === 200) {
+							imageList = xhr.responseText;
+                            if (imageList !== lastImageList && imageList !== '') {
+								lastImageList = imageList;
+                                frames = document.getElementsByClassName('frames')[0];
+								parseableList = imageList.replace(/'/g, '"'); /* Safe in this case as file paths should never contain single quotes */
+								JSON.parse(parseableList).forEach(element => {
+									var frameItem = document.createElement('li');
+									frameItem.dataset.image = element;
+									
+									var previewImage = document.createElement('img');
+									previewImage.src = '/image/view/' + element;
+									frameItem.appendChild(previewImage);
+									
+									var deleteButton = document.createElement('a');
+									deleteButton.innerHTML = '<span class="fa-solid fa-trash delete"></span>';
+									deleteButton.href = '/image/delete/' + element;
+									deleteButton.title = 'Delete this image...';
+									frameItem.appendChild(deleteButton);
+									
+									frames.appendChild(frameItem);
+								});
+                            }
+                        }
+                    }
+                };
+                xhr.send(null);
+            }
+
+            async function monitorImageList() {
+                try {
+                    while (true) {
+                        await updateImageList();
+                        await sleep(1000);
+                    }
+                }
+                catch(ex) {
+                    console.warn('Could not update image list', ex);
+                }
+            }
+            monitorImageList();
             
             async function cycleImage() {
                 try {
@@ -714,11 +794,11 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 				print('Export Video')  
 		elif self.path == '/image/prior':
 			fileList = glob.glob('dcim/' + '*.jpg')
-			fileLatest = max(fileList, key=os.path.getctime)
 			if len(fileList) == 0:
 				content = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E'
 			else:
-				content = '/image/' + fileLatest
+				fileLatest = max(fileList, key=os.path.getctime)
+				content = '/image/view/' + fileLatest
 			contentEncoded = content.encode('utf-8')
 			self.send_response(200)
 			self.send_header('Content-Type', 'text/html')
@@ -730,6 +810,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			if len(fileList) == 0:
 				content = 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22/%3E'
 			else:
+				fileList.sort(key=os.path.getctime)
 				content = str(fileList)
 			contentEncoded = content.encode('utf-8')
 			self.send_response(200)
@@ -737,14 +818,28 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 			self.send_header('Content-Length', len(contentEncoded))
 			self.end_headers()
 			self.wfile.write(contentEncoded)
-		elif self.path.startswith('/image/'):
-			imagePath = '/home/pi' + self.path.replace('/image/', '/')
-			print(imagePath)
+		elif self.path.startswith('/image/delete/'):
+			imagePath = '/home/pi' + self.path.replace('/image/delete/', '/')
+			try:
+				os.delete()
+				content = 'true'
+				self.send_response(200)
+			except Exception as ex:
+				content = str(ex)
+				self.send_response(404)
+			contentEncoded = content.encode('utf-8')
+			self.send_header('Content-Type', 'image/jpeg')
+			self.send_header('Content-Length', len(contentEncoded))
+			self.end_headers()
+			self.wfile.write(contentEncoded)
+		elif self.path.startswith('/image/view/'):
+			imagePath = '/home/pi' + self.path.replace('/image/view/', '/')
+			imageFileSize = os.stat(imagePath).st_size
 			imageFile = open(imagePath, 'rb')
 			imageData = imageFile.read()
 			self.send_response(200)
 			self.send_header('Content-Type', 'image/jpeg')
-			self.send_header('Content-Length', len(imageData))
+			self.send_header('Content-Length', imageFileSize)
 			self.end_headers()
 			self.wfile.write(imageData)
 			imageFile.close()

@@ -6,7 +6,7 @@ In the meantime, if you wish to use this software you will need to install the *
 
 ---
 
-# Camera Stopmotion
+# Camera Stop
 
 This application is currently an incomplete work-in-progress.
 
@@ -33,7 +33,7 @@ sudo chmod +x ~/install-camera.sh && ~/install-camera.sh
 
 ## Usage
 ```
-camera.stopmotion
+camera.stop
 ```
 
 ### Web Controls

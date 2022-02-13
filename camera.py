@@ -12,7 +12,7 @@ import threading
 import time
 
 
-version = '2022.02.04'
+version = '2022.02.13'
 
 camera = PiCamera()
 PiCamera.CAPTURE_TIMEOUT = 1500
@@ -314,7 +314,7 @@ try:
 		# print(str(camera.resolution))
 		
 
-		print('\n Camera Stopmotion ' + version )
+		print('\n Camera Stop ' + version )
 		print('\n ----------------------------------------------------------------------')
 		time.sleep(2)
 
