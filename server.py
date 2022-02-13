@@ -790,7 +790,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 
 		elif self.path.startswith('/export/'):
 			if self.path == '/export/zip':	
-				archivePath = '/home/pi/dcim/sequence.zip'
+				archivePath = 'sequence.zip'
 				fileList = glob.glob('dcim/' + '*.jpg')
 				if len(fileList) == 0:
 					content = ''
@@ -799,9 +799,10 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 					with zipfile.ZipFile(archivePath, 'w') as zip:
 						for file in fileList:
 							zip.write(file, compress_type=zipfile.ZIP_DEFLATED)
-							print('compressed')
+							print('Compressed:', str(file))
 
 					archiveFileSize = os.stat(archivePath).st_size
+					print('archiveFileSize', archiveFileSize)
 					archiveFile = open(archivePath, 'rb')
 					archiveData = archiveFile.read()
 					self.send_response(200)
@@ -810,8 +811,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 					self.end_headers()
 					self.wfile.write(archiveData)
 					archiveFile.close()	
+					print('File export complete:', archivePath)
 					os.remove(archivePath)
-					print('done')
 			elif self.path == '/export/video':	
 				print('Export Video')  
 		elif self.path == '/image/prior':
