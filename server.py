@@ -2,6 +2,7 @@ import glob
 import io
 import logging
 import os
+import shutil
 import socketserver
 import subprocess
 from light import Light
