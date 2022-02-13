@@ -801,17 +801,17 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 							zip.write(file, compress_type=zipfile.ZIP_DEFLATED)
 							print('compressed')
 
-				archiveFileSize = os.stat(archivePath).st_size
-				archiveFile = open(archivePath, 'rb')
-				archiveData = archiveFile.read()
-				self.send_response(200)
-				self.send_header('Content-Type', 'application/zip')
-				self.send_header('Content-Length', archiveFileSize)
-				self.end_headers()
-				self.wfile.write(archiveData)
-				archiveFile.close()	
-				os.remove(archivePath)
-				print('done')
+					archiveFileSize = os.stat(archivePath).st_size
+					archiveFile = open(archivePath, 'rb')
+					archiveData = archiveFile.read()
+					self.send_response(200)
+					self.send_header('Content-Type', 'application/zip')
+					self.send_header('Content-Length', archiveFileSize)
+					self.end_headers()
+					self.wfile.write(archiveData)
+					archiveFile.close()	
+					os.remove(archivePath)
+					print('done')
 			elif self.path == '/export/video':	
 				print('Export Video')  
 		elif self.path == '/image/prior':
