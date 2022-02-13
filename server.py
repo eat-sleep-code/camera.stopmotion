@@ -789,7 +789,12 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 
 		elif self.path.startswith('/export/'):
 			if self.path == '/export/zip':	
-				print('Export ZIP')
+				fileList = glob.glob('dcim/' + '*.jpg')
+				if len(fileList) == 0:
+					content = ''
+				else:
+					fileList.sort(key=os.path.getctime)
+					shutil.make_archive('sequence', 'zip', fileList)
 			elif self.path == '/export/video':	
 				print('Export Video')  
 		elif self.path == '/image/prior':
