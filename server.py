@@ -2,9 +2,9 @@ import glob
 import io
 import logging
 import os
-import shutil
 import socketserver
 import subprocess
+import zipfile
 from light import Light
 from picamera import PiCamera
 from threading import Condition
@@ -790,12 +790,28 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 
 		elif self.path.startswith('/export/'):
 			if self.path == '/export/zip':	
+				archivePath = '/home/pi/dcim/sequence.zip'
 				fileList = glob.glob('dcim/' + '*.jpg')
 				if len(fileList) == 0:
 					content = ''
 				else:
 					fileList.sort(key=os.path.getctime)
-					shutil.make_archive('sequence', 'zip', fileList)
+					with zipfile.ZipFile(archivePath, 'w') as zip:
+						for file in fileList:
+							zip.write(file, compress_type=zipfile.ZIP_DEFLATED)
+							print('compressed')
+
+				archiveFileSize = os.stat(archivePath).st_size
+				archiveFile = open(archivePath, 'rb')
+				archiveData = archiveFile.read()
+				self.send_response(200)
+				self.send_header('Content-Type', 'application/zip')
+				self.send_header('Content-Length', archiveFileSize)
+				self.end_headers()
+				self.wfile.write(archiveData)
+				archiveFile.close()	
+				os.remove(archivePath)
+				print('done')
 			elif self.path == '/export/video':	
 				print('Export Video')  
 		elif self.path == '/image/prior':
